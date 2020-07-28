@@ -3,7 +3,7 @@
 [![Version](http://img.shields.io/npm/v/aframe-cursor-teleport-component.svg?style=flat-square)](https://npmjs.org/package/aframe-cursor-teleport-component)
 [![License](http://img.shields.io/npm/l/aframe-cursor-teleport-component.svg?style=flat-square)](https://npmjs.org/package/aframe-cursor-teleport-component)
 
-Simple teleport navigation for non-XR devices.
+Simple teleport navigation for non-XR devices. See [live example](https://mwbeene.github.io/aframe-cursor-teleport/examples/basic/).
 
 For [A-Frame](https://aframe.io).
 
