@@ -5,8 +5,8 @@
 
 A simple A-Frame component for navigating scenes on non-VR devices. When combined with A-Frame's cursor and look-controls components, this allows users to freely explore A-Frame scenes using device orientation and touch on mobile or using the mouse on desktop.
 
-[Live Example - Basic](https://mwbeene.github.io/aframe-cursor-teleport/examples/basic/index.html).
-[Live Example - Custom Collision](https://mwbeene.github.io/aframe-cursor-teleport/examples/custom/index.html).
+- [Live Example - Basic](https://mwbeene.github.io/aframe-cursor-teleport/examples/basic/index.html)
+- [Live Example - Custom Collision](https://mwbeene.github.io/aframe-cursor-teleport/examples/custom/index.html)
 
 For [A-Frame](https://aframe.io).
 
