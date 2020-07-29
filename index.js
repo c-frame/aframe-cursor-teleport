@@ -114,8 +114,6 @@ AFRAME.registerComponent('cursor-teleport', {
 
     self.getTeleportPosition = function (mouse_x, mouse_y) {
 
-      self.updateRaycastObjects();
-
       if (self.rayCastObjects.length != 0) {
         if (self.hasOwnProperty('cam') && self.hasOwnProperty('canvas')) {
           var cam = self.cam.children[0];
@@ -172,6 +170,8 @@ AFRAME.registerComponent('cursor-teleport', {
     }
 
     function mouseDown(e) {
+      self.updateRaycastObjects();
+      
       var mouseState = getMouseState(self.canvas, e);
       self.mouseX = mouseState.x;
       self.mouseY = mouseState.y;
