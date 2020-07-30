@@ -24,7 +24,7 @@
     <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable" renderer="colorManagement: true;">
 
       <!-- player -->
-      <a-entity id="cameraRig" position="0 0 0" cursor-teleport="collisionEntities: .collision; ignoreEntities: .clickable">
+      <a-entity id="cameraRig" position="0 0 0" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable">
         <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true"></a-entity>
       </a-entity>
 

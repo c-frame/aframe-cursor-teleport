@@ -15,6 +15,7 @@ For [A-Frame](https://aframe.io).
 | Property          | Description   | Default Value     |
 | ---               | ---           | ---               |
 | cameraRig | Selector of the camera rig to teleport | |
+| cameraHead | Selector of the scene's active camera ||
 | collisionEntities | Selector of the meshes used to check the collisions. If no value provided a plane at Y=0 is used. | |
 | ignoreEntities | Selector of meshes that may obstruct the teleport raycaster, like UI or other clickable elements. 
 | landingNormal | Normal vector to detect collisions with the `collisionEntities` | (0, 1, 0) |
@@ -56,13 +57,13 @@ require('aframe-cursor-teleport-component');
 ```
 
 ### Usage
-I recommend using a camera rig setup, similar to fernandojsg's [aframe-teleport-controls](https://github.com/fernandojsg/aframe-teleport-controls/blob/master/README.md).
+This component requires a camera rig setup as described in fernandojsg's [aframe-teleport-controls](https://github.com/fernandojsg/aframe-teleport-controls/blob/master/README.md).
 
 #### Basic Setup
 
 ```html
 <a-scene cursor="rayOrigin: mouse">
-    <a-entity id="cameraRig" cursor-teleport>
+    <a-entity id="cameraRig" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head">
         <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true">            
         </a-entity>
     </a-entity>
@@ -76,7 +77,7 @@ To add collision objects, simply identify them with a selector:
 ```html
 <a-scene cursor="rayOrigin: mouse">
     <!-- camera rig -->
-    <a-entity id="cameraRig" cursor-teleport="collisionEntities: .collision">
+    <a-entity id="cameraRig" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision">
         <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true"></a-entity>
     </a-entity>
 
@@ -92,7 +93,7 @@ If your scene has interactive entities that should not initiate a teleport when 
 ```html
 <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable" >
     <!-- camera rig -->
-    <a-entity id="cameraRig" cursor-teleport="collisionEntities: .collision; ignoreEntities: .clickable">
+    <a-entity id="cameraRig" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable">
         <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true"></a-entity>
     </a-entity>
 
@@ -111,7 +112,7 @@ This component works with fernandojsg's [aframe-teleport-controls](https://githu
 ```html
 <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable" >
     <!-- camera rig -->
-    <a-entity id="cameraRig" navigator="collisionEntities: .collision; ignoreEntities: .clickable">
+    <a-entity id="cameraRig" navigator="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable">
         <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true"></a-entity>
         <a-entity laser-controls="hand: left" raycaster="objects: .clickable; far: 100" line="color: red; opacity: 0.75" teleport-controls="cameraRig: #cameraRig; teleportOrigin: #head;"></a-entity>
         <a-entity laser-controls="hand: right" raycaster="objects: .clickable" line="color: red; opacity: 0.75" teleport-controls="cameraRig: #cameraRig; teleportOrigin: #head;"></a-entity>

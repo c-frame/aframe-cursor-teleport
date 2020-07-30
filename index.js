@@ -9,6 +9,8 @@ if (typeof AFRAME === 'undefined') {
  */
 AFRAME.registerComponent('cursor-teleport', {
   schema: {
+    cameraHead: { type: 'string', default: '' },
+    cameraRig: { type: 'string', default: '' },
     collisionEntities: { type: 'string', default: '' },
     ignoreEntities: { type: 'string', default: '' },
     landingMaxAngle: { default: '45', min: 0, max: 360 },
@@ -25,10 +27,11 @@ AFRAME.registerComponent('cursor-teleport', {
     self.canvas = self.scene.renderer.domElement;
 
     // camera
-    self.cam = document.querySelector('#head').object3D;
+    self.cam = document.querySelector(this.data.cameraHead).object3D;
     self.camPos = new THREE.Vector3();
-    self.camRig = document.querySelector('#cameraRig').object3D;
+    self.camRig = document.querySelector(this.data.cameraRig).object3D;
     self.camPos = self.camRig.position;
+    // rig = this.data.cameraRig || this.el.sceneEl.camera.el;
 
     //collision
     self.rayCaster = new THREE.Raycaster();
@@ -171,7 +174,7 @@ AFRAME.registerComponent('cursor-teleport', {
 
     function mouseDown(e) {
       self.updateRaycastObjects();
-      
+
       var mouseState = getMouseState(self.canvas, e);
       self.mouseX = mouseState.x;
       self.mouseY = mouseState.y;
