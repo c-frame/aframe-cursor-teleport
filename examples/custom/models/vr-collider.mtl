@@ -1,0 +1,13 @@
+# Blender MTL File: 'environment.blend'
+# Material Count: 1
+
+newmtl uv-checker|lm_environment
+Ns 9.000004
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:\\Paragram\\vr-development\\2020-07-24_navigator\\models\\textures\\uv-checker.jpg

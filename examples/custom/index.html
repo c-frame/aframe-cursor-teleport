@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <title>A-Frame Cursor Teleport Component - Custom</title>
     <meta name="description" content="Basic example for Cursor Teleport component."></meta>
-    <script src="https://aframe.io/releases/0.9.2/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.0.3/aframe.min.js"></script>
     <script src="../../dist/aframe-cursor-teleport-component.min.js"></script>
-    <script src="https://unpkg.com/aframe-environment-component@1.0.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script>
 
     <!-- load custom materials -->
     <script src="models/materials.js"></script>
@@ -33,10 +33,33 @@
       <!-- player -->
       <a-entity id="cameraRig" position="0 0 0" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable">
         <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true"></a-entity>
+        <a-entity
+          laser-controls="hand: left"
+          raycaster="objects: .clickable; far: 100"
+          line="color: red; opacity: 0.75"
+          teleport-controls="
+            collisionEntities: #vr-collider;
+            cameraRig: #cameraRig;
+            teleportOrigin: #head;
+            button: thumbstick;
+            curveShootingSpeed: 8"></a-entity>
+        <a-entity
+          laser-controls="hand: right"
+          raycaster="objects: .clickable"
+          line="color: red; opacity: 0.75"
+          teleport-controls="
+            collisionEntities: #vr-collider;
+            cameraRig: #cameraRig;
+            teleportOrigin: #head;
+            button: thumbstick;
+            curveShootingSpeed: 8"></a-entity>
       </a-entity>
 
       <!-- scene model -->
       <a-entity class="collision" loader="path: models/environment.glb"></a-entity>
+
+      <!-- collision for vr teleport controls -->
+      <a-entity id="vr-collider" obj-model="obj: url(models/vr-collider.obj)" visible="false"></a-entity>
 
       <!-- ui element -->
       <a-entity class="clickable" color-change geometry="primitive: octahedron" scale=".2 .2 .2" position="-.8 1 -1.5" material="color: #3f51b5"></a-entity>
