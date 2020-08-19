@@ -27,11 +27,15 @@ AFRAME.registerComponent('cursor-teleport', {
     self.canvas = self.scene.renderer.domElement;
 
     // camera
-    self.cam = document.querySelector(this.data.cameraHead).object3D;
+    document.querySelector(this.data.cameraHead).object3D.traverse(function (child) {
+      if (child instanceof THREE.Camera) {
+        self.cam = child;
+      }
+    });
+
     self.camPos = new THREE.Vector3();
     self.camRig = document.querySelector(this.data.cameraRig).object3D;
     self.camPos = self.camRig.position;
-    // rig = this.data.cameraRig || this.el.sceneEl.camera.el;
 
     //collision
     self.rayCaster = new THREE.Raycaster();
@@ -119,7 +123,7 @@ AFRAME.registerComponent('cursor-teleport', {
 
       if (self.rayCastObjects.length != 0) {
         if (self.hasOwnProperty('cam') && self.hasOwnProperty('canvas')) {
-          var cam = self.cam.children[0];
+          var cam = self.cam;
           var rect = self.canvas.getBoundingClientRect();
           var mouse = new THREE.Vector2();
 
