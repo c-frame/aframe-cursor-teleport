@@ -91,17 +91,19 @@ AFRAME.registerComponent('cursor-teleport', {
         self.rayCastObjects.push(collisionMesh);
       }
 
-      // We need some entities to be seen by the raycaster even though they are not teleportable.
+      // We may need some entities to be seen by the raycaster even though they are not teleportable.
       // This prevents the user from unnesserily teleporting when clicking things like buttons or UI.
-      var ignoreEntities = self.scene.querySelectorAll(this.data.ignoreEntities);
-
-      ignoreEntities.forEach(e => {
-        e.object3D.traverse(function (child) {
-          if (child instanceof THREE.Mesh) {
-            self.rayCastObjects.push(child);
-          }
+      
+      if(this.data.ignoreEntities != '') {
+        var ignoreEntities = self.scene.querySelectorAll(this.data.ignoreEntities);
+        ignoreEntities.forEach(e => {
+          e.object3D.traverse(function (child) {
+            if (child instanceof THREE.Mesh) {
+              self.rayCastObjects.push(child);
+            }
+          });
         });
-      });
+      }
     }
 
     function getMouseState(canvas, e) {
