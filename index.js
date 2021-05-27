@@ -17,66 +17,69 @@ AFRAME.registerComponent('cursor-teleport', {
     landingNormal: { type: 'vec3', default: '0 1 0' }
   },
   init: function () {
-    self = this;
+
+    console.log( "Fixed self" );
+
+    teleporter = this;
 
     // platform detect
-    self.mobile = AFRAME.utils.device.isMobile();
+    teleporter.mobile = AFRAME.utils.device.isMobile();
 
     // main app
-    self.scene = this.el.sceneEl;
-    self.canvas = self.scene.renderer.domElement;
+    teleporter.scene = this.el.sceneEl;
+    teleporter.canvas = teleporter.scene.renderer.domElement;
 
     // camera
     document.querySelector(this.data.cameraHead).object3D.traverse(function (child) {
       if (child instanceof THREE.Camera) {
-        self.cam = child;
+        teleporter.cam = child;
       }
     });
 
-    self.camPos = new THREE.Vector3();
-    self.camRig = document.querySelector(this.data.cameraRig).object3D;
-    self.camPos = self.camRig.position;
+    teleporter.camPos = new THREE.Vector3();
+    teleporter.camRig = document.querySelector(this.data.cameraRig).object3D;
+    teleporter.camPos = teleporter.camRig.position;
 
     //collision
-    self.rayCaster = new THREE.Raycaster();
-    self.referenceNormal = new THREE.Vector3();
-    self.rayCastObjects = [];
+    teleporter.rayCaster = new THREE.Raycaster();
+    teleporter.referenceNormal = new THREE.Vector3();
+    teleporter.rayCastObjects = [];
 
     // Update collision normal
-    self.referenceNormal.copy(this.data.landingNormal);
+    teleporter.referenceNormal.copy(this.data.landingNormal);
 
     // teleport indicator
     var geo = new THREE.RingGeometry(.25, .3, 32, 1);
     geo.rotateX(-Math.PI / 2);
     geo.translate(0, .02, 0);
     var mat = new THREE.MeshBasicMaterial();
-    self.teleportIndicator = new THREE.Mesh(geo, mat);
-    self.scene.object3D.add(self.teleportIndicator);
+    teleporter.teleportIndicator = new THREE.Mesh(geo, mat);
+    teleporter.scene.object3D.add(teleporter.teleportIndicator);
 
     // transition
-    self.transitioning = false;
-    self.transitionProgress = 0;
-    self.transitionSpeed = .01;
-    self.transitionCamPosStart = new THREE.Vector3();
-    self.transitionCamPosEnd = new THREE.Vector3();
+    teleporter.transitioning = false;
+    teleporter.transitionProgress = 0;
+    teleporter.transitionSpeed = .01;
+    teleporter.transitionCamPosStart = new THREE.Vector3();
+    teleporter.transitionCamPosEnd = new THREE.Vector3();
 
-    self.updateRaycastObjects = function () {
+    teleporter.updateRaycastObjects = function () {
 
       // updates the array of meshes we will need to raycast to
 
       // clear the array of any existing meshes
-      self.rayCastObjects = [];
+      teleporter.rayCastObjects = [];
 
       if (this.data.collisionEntities != '') {
         // traverse collision entities and add their meshes to the rayCastEntities array.
-        var collisionEntities = self.scene.querySelectorAll(this.data.collisionEntities);
+        var collisionEntities = teleporter.scene.querySelectorAll(this.data.collisionEntities);
 
         collisionEntities.forEach(e => {
           e.object3D.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
               // mark this mesh as a collision object
               child.userData.collision = true;
-              self.rayCastObjects.push(child);
+              teleporter.rayCastObjects.push(child);
             }
           });
         });
@@ -88,18 +91,18 @@ AFRAME.registerComponent('cursor-teleport', {
         var collisionMesh = new THREE.Mesh(geo, mat);
         // mark this mesh as a collision object
         collisionMesh.userData.collision = true;
-        self.rayCastObjects.push(collisionMesh);
+        teleporter.rayCastObjects.push(collisionMesh);
       }
 
       // We may need some entities to be seen by the raycaster even though they are not teleportable.
       // This prevents the user from unnesserily teleporting when clicking things like buttons or UI.
       
       if(this.data.ignoreEntities != '') {
-        var ignoreEntities = self.scene.querySelectorAll(this.data.ignoreEntities);
+        var ignoreEntities = teleporter.scene.querySelectorAll(this.data.ignoreEntities);
         ignoreEntities.forEach(e => {
           e.object3D.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
-              self.rayCastObjects.push(child);
+              teleporter.rayCastObjects.push(child);
             }
           });
         });
@@ -121,21 +124,21 @@ AFRAME.registerComponent('cursor-teleport', {
       }
     }
 
-    self.getTeleportPosition = function (mouse_x, mouse_y) {
+    teleporter.getTeleportPosition = function (mouse_x, mouse_y) {
 
-      if (self.rayCastObjects.length != 0) {
-        if (self.hasOwnProperty('cam') && self.hasOwnProperty('canvas')) {
-          var cam = self.cam;
-          var rect = self.canvas.getBoundingClientRect();
+      if (teleporter.rayCastObjects.length != 0) {
+        if (teleporter.hasOwnProperty('cam') && teleporter.hasOwnProperty('canvas')) {
+          var cam = teleporter.cam;
+          var rect = teleporter.canvas.getBoundingClientRect();
           var mouse = new THREE.Vector2();
 
           mouse.x = (mouse_x / (rect.right - rect.left)) * 2 - 1;
           mouse.y = -(mouse_y / (rect.bottom - rect.top)) * 2 + 1;
 
-          self.rayCaster.setFromCamera(mouse, cam);
-          var intersects = self.rayCaster.intersectObjects(self.rayCastObjects);
+          teleporter.rayCaster.setFromCamera(mouse, cam);
+          var intersects = teleporter.rayCaster.intersectObjects(teleporter.rayCastObjects);
 
-          if (intersects.length != 0 && self.isValidNormalsAngle(intersects[0].face.normal)) {
+          if (intersects.length != 0 && teleporter.isValidNormalsAngle(intersects[0].face.normal)) {
             if (intersects[0].object.userData.collision == true) {
               return intersects[0].point;
             }
@@ -151,91 +154,91 @@ AFRAME.registerComponent('cursor-teleport', {
       }
     }
 
-    self.isValidNormalsAngle = function (collisionNormal) {
-      var angleNormals = self.referenceNormal.angleTo(collisionNormal);
+    teleporter.isValidNormalsAngle = function (collisionNormal) {
+      var angleNormals = teleporter.referenceNormal.angleTo(collisionNormal);
       return (THREE.Math.RAD2DEG * angleNormals <= this.data.landingMaxAngle);
     }
 
-    self.transition = function (destPos) {
-      self.transitionProgress = 0;
+    teleporter.transition = function (destPos) {
+      teleporter.transitionProgress = 0;
 
-      self.transitionCamPosEnd.x = destPos.x;
-      self.transitionCamPosEnd.y = destPos.y;
-      self.transitionCamPosEnd.z = destPos.z;
+      teleporter.transitionCamPosEnd.x = destPos.x;
+      teleporter.transitionCamPosEnd.y = destPos.y;
+      teleporter.transitionCamPosEnd.z = destPos.z;
 
-      self.transitionCamPosStart.x = self.camPos.x;
-      self.transitionCamPosStart.y = self.camPos.y;
-      self.transitionCamPosStart.z = self.camPos.z;
+      teleporter.transitionCamPosStart.x = teleporter.camPos.x;
+      teleporter.transitionCamPosStart.y = teleporter.camPos.y;
+      teleporter.transitionCamPosStart.z = teleporter.camPos.z;
 
-      self.transitioning = true;
+      teleporter.transitioning = true;
     }
 
     function mouseMove(e) {
-      var mouseState = getMouseState(self.canvas, e);
+      var mouseState = getMouseState(teleporter.canvas, e);
 
-      self.mouseX = mouseState.x;
-      self.mouseY = mouseState.y;
+      teleporter.mouseX = mouseState.x;
+      teleporter.mouseY = mouseState.y;
 
     }
 
     function mouseDown(e) {
-      self.updateRaycastObjects();
+      teleporter.updateRaycastObjects();
 
-      var mouseState = getMouseState(self.canvas, e);
-      self.mouseX = mouseState.x;
-      self.mouseY = mouseState.y;
+      var mouseState = getMouseState(teleporter.canvas, e);
+      teleporter.mouseX = mouseState.x;
+      teleporter.mouseY = mouseState.y;
 
-      self.mouseXOrig = mouseState.x;
-      self.mouseYOrig = mouseState.y;
+      teleporter.mouseXOrig = mouseState.x;
+      teleporter.mouseYOrig = mouseState.y;
 
     }
 
     function mouseUp(e) {
-      if (self.mouseX == self.mouseXOrig && self.mouseY == self.mouseYOrig) {
-        var pos = self.getTeleportPosition(self.mouseX, self.mouseY);
+      if (teleporter.mouseX == teleporter.mouseXOrig && teleporter.mouseY == teleporter.mouseYOrig) {
+        var pos = teleporter.getTeleportPosition(teleporter.mouseX, teleporter.mouseY);
         if (pos) {
-          self.teleportIndicator.position.x = pos.x;
-          self.teleportIndicator.position.y = pos.y;
-          self.teleportIndicator.position.z = pos.z;
-          self.transition(pos);
+          teleporter.teleportIndicator.position.x = pos.x;
+          teleporter.teleportIndicator.position.y = pos.y;
+          teleporter.teleportIndicator.position.z = pos.z;
+          teleporter.transition(pos);
         }
       }
     }
 
-    self.updateRaycastObjects();
+    teleporter.updateRaycastObjects();
 
     // event listeners
-    self.canvas.addEventListener('mousedown', mouseDown, false);
-    self.canvas.addEventListener('mousemove', mouseMove, false);
-    self.canvas.addEventListener('mouseup', mouseUp, false);
-    self.canvas.addEventListener('touchstart', mouseDown, false);
-    self.canvas.addEventListener('touchmove', mouseMove, false);
-    self.canvas.addEventListener('touchend', mouseUp, false);
+    teleporter.canvas.addEventListener('mousedown', mouseDown, false);
+    teleporter.canvas.addEventListener('mousemove', mouseMove, false);
+    teleporter.canvas.addEventListener('mouseup', mouseUp, false);
+    teleporter.canvas.addEventListener('touchstart', mouseDown, false);
+    teleporter.canvas.addEventListener('touchmove', mouseMove, false);
+    teleporter.canvas.addEventListener('touchend', mouseUp, false);
 
     // helper functions
-    self.easeInOutQuad = function (t) {
+    teleporter.easeInOutQuad = function (t) {
       return t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     }
   },
   tick: function () {
-    if (!self.transitioning && !self.mobile) {
-      var pos = self.getTeleportPosition(self.mouseX, self.mouseY);
-      if (!self.mobile && pos) {
-        self.teleportIndicator.position.x = pos.x;
-        self.teleportIndicator.position.y = pos.y;
-        self.teleportIndicator.position.z = pos.z;
+    if (!teleporter.transitioning && !teleporter.mobile) {
+      var pos = teleporter.getTeleportPosition(teleporter.mouseX, teleporter.mouseY);
+      if (!teleporter.mobile && pos) {
+        teleporter.teleportIndicator.position.x = pos.x;
+        teleporter.teleportIndicator.position.y = pos.y;
+        teleporter.teleportIndicator.position.z = pos.z;
       }
     }
-    if (self.transitioning) {
-      self.transitionProgress += self.transitionSpeed;
+    if (teleporter.transitioning) {
+      teleporter.transitionProgress += teleporter.transitionSpeed;
 
       // set camera position
-      self.camPos.x = self.transitionCamPosStart.x + ((self.transitionCamPosEnd.x - self.transitionCamPosStart.x) * self.easeInOutQuad(self.transitionProgress));
-      self.camPos.y = self.transitionCamPosStart.y + ((self.transitionCamPosEnd.y - self.transitionCamPosStart.y) * self.easeInOutQuad(self.transitionProgress));
-      self.camPos.z = self.transitionCamPosStart.z + ((self.transitionCamPosEnd.z - self.transitionCamPosStart.z) * self.easeInOutQuad(self.transitionProgress));
+      teleporter.camPos.x = teleporter.transitionCamPosStart.x + ((teleporter.transitionCamPosEnd.x - teleporter.transitionCamPosStart.x) * teleporter.easeInOutQuad(teleporter.transitionProgress));
+      teleporter.camPos.y = teleporter.transitionCamPosStart.y + ((teleporter.transitionCamPosEnd.y - teleporter.transitionCamPosStart.y) * teleporter.easeInOutQuad(teleporter.transitionProgress));
+      teleporter.camPos.z = teleporter.transitionCamPosStart.z + ((teleporter.transitionCamPosEnd.z - teleporter.transitionCamPosStart.z) * teleporter.easeInOutQuad(teleporter.transitionProgress));
 
-      if (self.transitionProgress >= 1) {
-        self.transitioning = false;
+      if (teleporter.transitionProgress >= 1) {
+        teleporter.transitioning = false;
       }
     }
   }
