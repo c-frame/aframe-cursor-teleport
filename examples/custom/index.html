@@ -4,15 +4,10 @@
     <meta charset="utf-8">
     <title>A-Frame Cursor Teleport Component - Custom</title>
     <meta name="description" content="Basic example for Cursor Teleport component."></meta>
-    <script src="https://aframe.io/releases/1.0.3/aframe.min.js"></script>
+    <!-- <script src="https://aframe.io/releases/1.0.3/aframe.min.js"></script> -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="../../dist/aframe-cursor-teleport-component.min.js"></script>
     <script src="https://rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script>
-
-    <!-- load custom materials -->
-    <script src="models/materials.js"></script>
-    
-    <!-- model loader -->
-    <script src="js/loader.js"></script>
 
   </head>
   <body>
@@ -29,6 +24,10 @@
     </script>
 
     <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable" renderer="colorManagement: true;">
+
+      <a-assets>
+        <a-asset-item id="environment" src="models/environment.glb"></a-asset-item>
+      </a-assets>
 
       <!-- player -->
       <a-entity id="cameraRig" position="0 0 0" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable">
@@ -56,7 +55,7 @@
       </a-entity>
 
       <!-- scene model -->
-      <a-entity class="collision" loader="path: models/environment.glb"></a-entity>
+      <a-entity class="collision" gltf-model="#environment"></a-entity>
 
       <!-- collision for vr teleport controls -->
       <a-entity id="vr-collider" obj-model="obj: url(models/vr-collider.obj)" visible="false"></a-entity>
