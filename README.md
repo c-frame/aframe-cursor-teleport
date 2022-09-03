@@ -10,7 +10,7 @@ A simple A-Frame component for navigating scenes on non-VR devices. When combine
 - [Live Example - Basic](https://mwbeene.github.io/aframe-cursor-teleport/examples/basic/index.html)
 - [Live Example - Custom Collision](https://mwbeene.github.io/aframe-cursor-teleport/examples/custom/index.html)
 
-For [A-Frame](https://aframe.io)
+For [A-Frame](https://aframe.io).
 
 ### API
 
