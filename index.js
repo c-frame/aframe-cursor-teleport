@@ -238,6 +238,7 @@ AFRAME.registerComponent('cursor-teleport', {
       teleporter.camPos.z = teleporter.transitionCamPosStart.z + ((teleporter.transitionCamPosEnd.z - teleporter.transitionCamPosStart.z) * teleporter.easeInOutQuad(teleporter.transitionProgress));
 
       if (teleporter.transitionProgress >= 1) {
+        teleporter.camPos.copy(teleporter.transitionCamPosEnd);
         teleporter.transitioning = false;
       }
     }
