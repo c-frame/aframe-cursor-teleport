@@ -156,7 +156,7 @@ AFRAME.registerComponent('cursor-teleport', {
 
     teleporter.isValidNormalsAngle = function (collisionNormal) {
       var angleNormals = teleporter.referenceNormal.angleTo(collisionNormal);
-      return (THREE.Math.RAD2DEG * angleNormals <= this.data.landingMaxAngle);
+      return (THREE.MathUtils.RAD2DEG * angleNormals <= this.data.landingMaxAngle);
     }
 
     teleporter.transition = function (destPos) {
