@@ -84,14 +84,17 @@ AFRAME.registerComponent('cursor-teleport', {
           });
         });
       } else {
-        // if no collision entities are specified, create a default ground plane collision.
-        var geo = new THREE.PlaneGeometry(50, 50, 1);
-        geo.rotateX(-Math.PI / 2);
-        var mat = new THREE.MeshNormalMaterial();
-        var collisionMesh = new THREE.Mesh(geo, mat);
-        // mark this mesh as a collision object
-        collisionMesh.userData.collision = true;
-        teleporter.rayCastObjects.push(collisionMesh);
+        if (!teleporter.collisionMesh) {
+          // if no collision entities are specified, create a default ground plane collision.
+          var geo = new THREE.PlaneGeometry(50, 50, 1);
+          geo.rotateX(-Math.PI / 2);
+          var mat = new THREE.MeshNormalMaterial();
+          var collisionMesh = new THREE.Mesh(geo, mat);
+          // mark this mesh as a collision object
+          collisionMesh.userData.collision = true;
+          teleporter.collisionMesh = collisionMesh;
+        }
+        teleporter.rayCastObjects.push(teleporter.collisionMesh);
       }
 
       // We may need some entities to be seen by the raycaster even though they are not teleportable.
