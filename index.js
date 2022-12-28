@@ -13,8 +13,9 @@ AFRAME.registerComponent('cursor-teleport', {
     cameraRig: { type: 'string', default: '' },
     collisionEntities: { type: 'string', default: '' },
     ignoreEntities: { type: 'string', default: '' },
-    landingMaxAngle: { default: '45', min: 0, max: 360 },
-    landingNormal: { type: 'vec3', default: '0 1 0' }
+    landingMaxAngle: { default: 45, min: 0, max: 360 },
+    landingNormal: { type: 'vec3', default: '0 1 0' },
+    transitionSpeed: { type: 'number', default: 0.0006 }
   },
   init: function () {
 
@@ -59,7 +60,6 @@ AFRAME.registerComponent('cursor-teleport', {
     // transition
     teleporter.transitioning = false;
     teleporter.transitionProgress = 0;
-    teleporter.transitionSpeed = .01;
     teleporter.transitionCamPosStart = new THREE.Vector3();
     teleporter.transitionCamPosEnd = new THREE.Vector3();
 
@@ -220,7 +220,7 @@ AFRAME.registerComponent('cursor-teleport', {
       return t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     }
   },
-  tick: function () {
+  tick: function (time, delta) {
     if (!teleporter.transitioning && !teleporter.mobile) {
       var pos = teleporter.getTeleportPosition(teleporter.mouseX, teleporter.mouseY);
       if (!teleporter.mobile && pos) {
@@ -230,7 +230,7 @@ AFRAME.registerComponent('cursor-teleport', {
       }
     }
     if (teleporter.transitioning) {
-      teleporter.transitionProgress += teleporter.transitionSpeed;
+      teleporter.transitionProgress += delta * teleporter.data.transitionSpeed;
 
       // set camera position
       teleporter.camPos.x = teleporter.transitionCamPosStart.x + ((teleporter.transitionCamPosEnd.x - teleporter.transitionCamPosStart.x) * teleporter.easeInOutQuad(teleporter.transitionProgress));
