@@ -16,7 +16,7 @@ AFRAME.registerComponent('cursor-teleport', {
     collisionEntities: { type: 'string', default: '' },
     ignoreEntities: { type: 'string', default: '' },
     landingMaxAngle: { default: 45, min: 0, max: 360 },
-    landingNormal: { type: 'vec3', default: '0 1 0' },
+    landingNormal: { type: 'vec3', default: { x: 0, y: 1, z: 0 } },
     transitionSpeed: { type: 'number', default: 0.0006 }
   },
 
