@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mwbeene/aframe-cursor-teleport.git"
+    "url": "git+https://github.com/c-frame/aframe-cursor-teleport.git"
   },
   "keywords": [
     "aframe",
@@ -33,9 +33,9 @@
   "author": "Mike Beene <mwbeene@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mwbeene/aframe-cursor-teleport/issues"
+    "url": "https://github.com/c-frame/aframe-cursor-teleport/issues"
   },
-  "homepage": "https://github.com/mwbeene/aframe-cursor-teleport#readme",
+  "homepage": "https://github.com/c-frame/aframe-cursor-teleport#readme",
   "dependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.3.3",

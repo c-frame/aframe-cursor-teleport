@@ -3,12 +3,12 @@
 [![Version](http://img.shields.io/npm/v/aframe-cursor-teleport-component.svg?style=flat-square)](https://npmjs.org/package/aframe-cursor-teleport-component)
 [![License](http://img.shields.io/npm/l/aframe-cursor-teleport-component.svg?style=flat-square)](https://npmjs.org/package/aframe-cursor-teleport-component)
 
-![Screenshot](https://github.com/mwbeene/aframe-cursor-teleport/raw/master/capture-01.gif)
+![Screenshot](https://github.com/c-frame/aframe-cursor-teleport/raw/master/capture-01.gif)
 
 A simple A-Frame component for navigating scenes on non-VR devices. When combined with A-Frame's cursor and look-controls components, this allows users to freely explore A-Frame scenes using device orientation and touch on mobile or using the mouse on desktop.
 
-- [Live Example - Basic](https://mwbeene.github.io/aframe-cursor-teleport/examples/basic/index.html)
-- [Live Example - Custom Collision](https://mwbeene.github.io/aframe-cursor-teleport/examples/custom/index.html)
+- [Live Example - Basic](https://c-frame.github.io/aframe-cursor-teleport/examples/basic/index.html)
+- [Live Example - Custom Collision](https://c-frame.github.io/aframe-cursor-teleport/examples/custom/index.html)
 
 For [A-Frame](https://aframe.io).
 
