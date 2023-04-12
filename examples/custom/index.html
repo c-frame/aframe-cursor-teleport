@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <title>A-Frame Cursor Teleport Component - Custom</title>
     <meta name="description" content="Basic example for Cursor Teleport component."></meta>
-    <!-- <script src="https://aframe.io/releases/1.0.3/aframe.min.js"></script> -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
+    <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
     <script src="../../dist/aframe-cursor-teleport-component.min.js"></script>
-    <script src="https://rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls/dist/aframe-blink-controls.min.js"></script>
 
   </head>
   <body>
@@ -36,22 +36,20 @@
           laser-controls="hand: left"
           raycaster="objects: .clickable; far: 100"
           line="color: red; opacity: 0.75"
-          teleport-controls="
-            collisionEntities: #vr-collider;
+          blink-controls="
+            collisionEntities: .collision;
             cameraRig: #cameraRig;
             teleportOrigin: #head;
-            button: thumbstick;
-            curveShootingSpeed: 8"></a-entity>
+            curveShootingSpeed: 6"></a-entity>
         <a-entity
           laser-controls="hand: right"
           raycaster="objects: .clickable"
           line="color: red; opacity: 0.75"
-          teleport-controls="
-            collisionEntities: #vr-collider;
+          blink-controls="
+            collisionEntities: .collision;
             cameraRig: #cameraRig;
             teleportOrigin: #head;
-            button: thumbstick;
-            curveShootingSpeed: 8"></a-entity>
+            curveShootingSpeed: 6"></a-entity>
       </a-entity>
 
       <!-- scene model -->
