@@ -1,31 +1,47 @@
 const path = require('path');
-const webpack = require('webpack');
-
-const PLUGINS = [];
 
 module.exports = {
-  devServer: {
-    disableHostCheck: true
-  },
   entry: './index.js',
-  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   output: {
-    globalObject: 'this',
-    path: __dirname + '/dist',
-    filename: process.env.NODE_ENV === 'production' ? 'aframe-cursor-teleport-component.min.js' : 'aframe-cursor-teleport-component.js',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/dist/',
+    filename:
+      process.env.NODE_ENV === 'production'
+        ? 'aframe-cursor-teleport-component.min.js'
+        : 'aframe-cursor-teleport-component.js'
   },
-  plugins: PLUGINS,
+  externals: {
+    // Stubs out `import ... from 'three'` so it returns `import ... from window.THREE` effectively using THREE global variable that is defined by AFRAME.
+    three: 'THREE'
+  },
+  devtool: 'source-map',
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+  devServer: {
+    port: process.env.PORT || 5000,
+    hot: false,
+    liveReload: true,
+    server: {
+      type: 'https'
+    },
+    static: {
+      directory: path.resolve(__dirname)
+    }
+  },
+  resolve: {
+    alias: {
+      three: 'super-three'
+    }
+  },
   module: {
     rules: [
       {
-        test: /\.js/,
-        exclude: /(node_modules)/,
-        use: ['babel-loader']
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader'
+        }
       }
     ]
-  },
-  resolve: {
-    modules: [path.join(__dirname, 'node_modules')]
   }
 };
