@@ -37,7 +37,9 @@ AFRAME.registerComponent('cursor-teleport', {
 
   init() {
     // platform detect
-    this.mobile = AFRAME.utils.device.isMobile();
+    this.mobile =
+      AFRAME.utils.device.isMobile() ||
+      AFRAME.utils.device.isMobileDeviceRequestingDesktopSite();
 
     // main app
     const sceneEl = this.el.sceneEl;
@@ -67,6 +69,7 @@ AFRAME.registerComponent('cursor-teleport', {
     const mat = new THREE.MeshBasicMaterial();
     const indicatorRing = new THREE.Mesh(geo, mat);
     this.teleportIndicator = indicatorRing;
+    this.teleportIndicator.visible = false;
 
     sceneEl.object3D.add(this.teleportIndicator);
 
@@ -86,6 +89,7 @@ AFRAME.registerComponent('cursor-teleport', {
     this.mouseDown = this.mouseDown.bind(this);
     this.mouseUp = this.mouseUp.bind(this);
     this.easeInOutQuad = this.easeInOutQuad.bind(this);
+    this.hideCursor = this.hideCursor.bind(this);
 
     this.updateRaycastObjects();
   },
@@ -113,9 +117,12 @@ AFRAME.registerComponent('cursor-teleport', {
     canvas.addEventListener('touchstart', this.mouseDown, false);
     canvas.addEventListener('touchmove', this.mouseMove, false);
     canvas.addEventListener('touchend', this.mouseUp, false);
+    window.addEventListener('keydown', this.hideCursor, false);
   },
 
   pause() {
+    this.transitioning = false;
+    this.hideCursor();
     const canvas = this.canvas;
     canvas.removeEventListener('mousedown', this.mouseDown);
     canvas.removeEventListener('mousemove', this.mouseMove);
@@ -123,6 +130,7 @@ AFRAME.registerComponent('cursor-teleport', {
     canvas.removeEventListener('touchstart', this.mouseDown);
     canvas.removeEventListener('touchmove', this.mouseMove);
     canvas.removeEventListener('touchend', this.mouseUp);
+    window.removeEventListener('keydown', this.hideCursor);
   },
 
   updateRaycastObjects() {
@@ -237,6 +245,10 @@ AFRAME.registerComponent('cursor-teleport', {
     this.transitioning = true;
   },
 
+  hideCursor() {
+    this.teleportIndicator.visible = false;
+  },
+
   mouseMove(e) {
     const mouseState = this.getMouseState(e);
     this.mouseX = mouseState.x;
@@ -258,6 +270,7 @@ AFRAME.registerComponent('cursor-teleport', {
     if (this.mouseX === this.mouseXOrig && this.mouseY === this.mouseYOrig) {
       const pos = this.getTeleportPosition(this.mouseX, this.mouseY);
       if (pos) {
+        this.teleportIndicator.visible = true;
         this.teleportIndicator.position.copy(pos);
         this.transition(pos);
       }
