@@ -243,6 +243,7 @@ AFRAME.registerComponent('cursor-teleport', {
     this.transitionCamPosEnd.copy(destPos);
     this.transitionCamPosStart.copy(this.camRig.position);
     this.transitioning = true;
+    this.el.emit('navigation-start');
   },
 
   hideCursor() {
@@ -296,22 +297,16 @@ AFRAME.registerComponent('cursor-teleport', {
 
       // set camera position
       const camPos = this.camRig.position;
-      camPos.x =
-        this.transitionCamPosStart.x +
-        (this.transitionCamPosEnd.x - this.transitionCamPosStart.x) *
-          easeInOutTransitionProgress;
-      camPos.y =
-        this.transitionCamPosStart.y +
-        (this.transitionCamPosEnd.y - this.transitionCamPosStart.y) *
-          easeInOutTransitionProgress;
-      camPos.z =
-        this.transitionCamPosStart.z +
-        (this.transitionCamPosEnd.z - this.transitionCamPosStart.z) *
-          easeInOutTransitionProgress;
+      camPos.lerpVectors(
+        this.transitionCamPosStart,
+        this.transitionCamPosEnd,
+        easeInOutTransitionProgress
+      );
 
       if (this.transitionProgress >= 1) {
         this.transitioning = false;
         camPos.copy(this.transitionCamPosEnd);
+        this.el.emit('navigation-end');
       }
     }
   }
