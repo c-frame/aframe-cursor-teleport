@@ -228,6 +228,7 @@ AFRAME.registerComponent('cursor-teleport', {
     this.transitionCamPosEnd.copy(destPos);
     this.transitionCamPosStart.copy(this.camRig.position);
     this.transitioning = true;
+    this.el.emit('navigation-start');
   },
 
   hideCursor() {
@@ -297,6 +298,7 @@ AFRAME.registerComponent('cursor-teleport', {
       if (this.transitionProgress >= 1) {
         this.transitioning = false;
         camPos.copy(this.transitionCamPosEnd);
+        this.el.emit('navigation-end');
       }
     }
   }

@@ -23,6 +23,13 @@ For [A-Frame](https://aframe.io).
 | landingNormal | Normal vector to detect collisions with the `collisionEntities` | (0, 1, 0) |
 | landingMaxAngle | Angle threshold (in degrees) used together with `landingNormal` to detect if the mesh is so steep to jump to it. | 45
 
+### Events
+
+The `cursor-teleport` component will emit two events:
+
+- `navigation-start`: Entity beginning travel to a destination.
+- `navigation-end`: Entity has reached destination.
+
 ### Installation
 
 #### Browser
@@ -124,4 +131,36 @@ This component works with [aframe-blink-controls](https://github.com/jure/aframe
     <!-- UI element -->
     <a-entity class="clickable" color-change geometry="primitive: octahedron" scale=".2 .2 .2" position="-.8 1 -1.5"></a-entity>
 </a-scene>
+```
+
+#### Use with simple-navmesh-constraint
+
+You should disable the `simple-navmesh-constraint` component during the navigation transition.
+You can do that like this:
+
+```
+<script>
+AFRAME.registerComponent("character-controller", {
+  events: {
+    "navigation-start": function () {
+      if (this.el.hasAttribute("simple-navmesh-constraint")) {
+        this.el.setAttribute("simple-navmesh-constraint", "enabled", false);
+      }
+    },
+    "navigation-end": function () {
+      if (this.el.hasAttribute("simple-navmesh-constraint")) {
+        this.el.setAttribute("simple-navmesh-constraint", "enabled", true);
+      }
+    },
+  },
+});
+</script>
+```
+
+Then add `character-controller` component to your cameraRig entity. You also probably want to add `.navmesh-hole` to the `cursor-teleport`'s `ignoreEntities`:
+
+```
+<a-entity id="cameraRig" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable,.navmesh-hole">
+  <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true"></a-entity>
+</a-entity>
 ```
