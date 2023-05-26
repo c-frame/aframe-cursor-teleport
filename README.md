@@ -32,13 +32,12 @@ Install and use by directly including the [browser files](dist):
 ```html
 <head>
   <title>My A-Frame Scene</title>
-  <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.2.0/dist/aframe-cursor-teleport-component.min.js"></script>
 </head>
-
 <body>
   <a-scene>
-    <a-entity cursor-teleport="foo: bar"></a-entity>
+    <!-- see usage below -->
   </a-scene>
 </body>
 ```
@@ -106,14 +105,14 @@ If your scene has interactive entities that should not initiate a teleport when 
 </a-scene>
 ```
 
-#### Use with aframe-teleport-controls
+#### Use with aframe-blink-controls
 
 This component works with [aframe-blink-controls](https://github.com/jure/aframe-blink-controls) allowing for easy-to-use navigation across virtually all devices:
 
 ```html
-<a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable" >
+<a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
     <!-- camera rig -->
-    <a-entity id="cameraRig" navigator="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable">
+    <a-entity id="cameraRig" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable">
         <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true"></a-entity>
         <a-entity laser-controls="hand: left" raycaster="objects: .clickable; far: 100" line="color: red; opacity: 0.75" blink-controls="cameraRig: #cameraRig; teleportOrigin: #head;"></a-entity>
         <a-entity laser-controls="hand: right" raycaster="objects: .clickable" line="color: red; opacity: 0.75" blink-controls="cameraRig: #cameraRig; teleportOrigin: #head;"></a-entity>
