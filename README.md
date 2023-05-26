@@ -138,7 +138,7 @@ This component works with [aframe-blink-controls](https://github.com/jure/aframe
 You should disable the `simple-navmesh-constraint` component during the navigation transition.
 You can do that like this:
 
-```
+```html
 <script>
 AFRAME.registerComponent("character-controller", {
   events: {
@@ -159,7 +159,7 @@ AFRAME.registerComponent("character-controller", {
 
 Then add `character-controller` component to your cameraRig entity. You also probably want to add `.navmesh-hole` to the `cursor-teleport`'s `ignoreEntities`:
 
-```
+```html
 <a-entity id="cameraRig" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable,.navmesh-hole">
   <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true"></a-entity>
 </a-entity>
