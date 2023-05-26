@@ -160,7 +160,7 @@ AFRAME.registerComponent("character-controller", {
 Then add `character-controller` component to your cameraRig entity. You also probably want to add `.navmesh-hole` to the `cursor-teleport`'s `ignoreEntities`:
 
 ```html
-<a-entity id="cameraRig" cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable,.navmesh-hole">
+<a-entity id="cameraRig" character-controller cursor-teleport="cameraRig: #cameraRig; cameraHead: #head; collisionEntities: .collision; ignoreEntities: .clickable,.navmesh-hole">
   <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true"></a-entity>
 </a-entity>
 ```
