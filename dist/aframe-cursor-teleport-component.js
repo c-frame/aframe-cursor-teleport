@@ -56,6 +56,8 @@ AFRAME.registerComponent('cursor-teleport', {
 
     // collision
     this.rayCaster = new THREE.Raycaster();
+    this.collisionObjectNormalMatrix = new THREE.Matrix3();
+    this.collisionWorldNormal = new THREE.Vector3();
     this.referenceNormal = new THREE.Vector3();
     this.rayCastObjects = [];
 
@@ -215,7 +217,7 @@ AFRAME.registerComponent('cursor-teleport', {
           );
           if (
             intersects.length !== 0 &&
-            this.isValidNormalsAngle(intersects[0].face.normal)
+            this.isValidNormalsAngle(intersects[0].face.normal, intersects[0].object)
           ) {
             if (intersects[0].object.userData.collision === true) {
               return intersects[0].point;
@@ -233,8 +235,10 @@ AFRAME.registerComponent('cursor-teleport', {
     };
   })(),
 
-  isValidNormalsAngle(collisionNormal) {
-    const angleNormals = this.referenceNormal.angleTo(collisionNormal);
+  isValidNormalsAngle(collisionNormal, collisionObject) {
+    this.collisionObjectNormalMatrix.getNormalMatrix(collisionObject.matrixWorld);
+    this.collisionWorldNormal.copy(collisionNormal).applyNormalMatrix(this.collisionObjectNormalMatrix);
+    const angleNormals = this.referenceNormal.angleTo(this.collisionWorldNormal);
     return THREE.MathUtils.RAD2DEG * angleNormals <= this.data.landingMaxAngle;
   },
 
