@@ -164,3 +164,16 @@ Then add `character-controller` component to your cameraRig entity. You also pro
   <a-entity id="head" position="0 1.52 0" camera look-controls="reverseMouseDrag: true"></a-entity>
 </a-entity>
 ```
+
+#### teleportTo API
+
+You can use the same teleport animation programmatically to teleport to a destination knowing
+the position and quaternion (optional):
+
+```js
+const cameraRig = document.getElementById('cameraRig');
+const cursorTeleport = cameraRig.components['cursor-teleport'];
+cursorTeleport.teleportTo(destination.object3D.position, destination.object3D.quaternion);
+```
+
+Look at the source code of the basic example, the black button triggers the teleportation to the black arrow on the second platform.

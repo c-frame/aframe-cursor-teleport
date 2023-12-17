@@ -59,10 +59,25 @@
       <a-entity class="clickable" color-change geometry="primitive: octahedron" scale=".2 .2 .2" position="0 1.2 -1.5" material="color: #3f51b5"></a-entity>
       <a-entity class="clickable" color-change geometry="primitive: octahedron" scale=".2 .2 .2" position=".8 1 -1.5" material="color: #3f51b5"></a-entity>
 
+      <a-entity id="destination" position="1.4 1.55 -1.38" rotation="0 135 0">
+        <a-entity geometry="primitive: ring; radiusInner: 0.48" scale="0.2 0.2 0.2" position="0 0.01 0" rotation="-90 0 0" material="color: #000000"></a-entity>
+        <a-entity geometry="primitive: plane" scale="0.15 0.15 0.15" position="0 0.011 -0.2" rotation="-90 45 0" material="color: #000000"></a-entity>
+      </a-entity>
+      <a-entity id="moveup" class="clickable" geometry="primitive: plane; width: 0.9; height: 0.3" text="value: move directly\non second platform; align: center; width: 2" position="1.6 1 -1.5" rotation="0 -45 0" material="color: #000000"></a-entity>
+
       <!-- environment -->
       <a-sky color="#e1f5fe"></a-sky>
 
     </a-scene>
+    <script>
+      const moveup = document.getElementById('moveup');
+      const destination = document.getElementById('destination');
+      const cameraRig = document.getElementById('cameraRig');
+      moveup.addEventListener('click', () => {
+        const cursorTeleport = cameraRig.components['cursor-teleport'];
+        cursorTeleport.teleportTo(destination.object3D.position, destination.object3D.quaternion);
+      });
+    </script>
 
     <!-- GitHub Corner. -->
     <a href="https://github.com/c-frame/aframe-cursor-teleport" class="github-corner">
