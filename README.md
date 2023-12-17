@@ -19,6 +19,7 @@ For [A-Frame](https://aframe.io).
 | cameraRig | Selector of the camera rig to teleport | |
 | cameraHead | Selector of the scene's active camera ||
 | collisionEntities | Selector of the meshes used to check the collisions. If no value provided a plane at Y=0 is used. | |
+| defaultPlaneSize | Size of the default plane created for collision when `collisionEntities` is not specified | 100 |
 | ignoreEntities | Selector of meshes that may obstruct the teleport raycaster, like UI or other clickable elements.
 | landingNormal | Normal vector to detect collisions with the `collisionEntities` | (0, 1, 0) |
 | landingMaxAngle | Angle threshold (in degrees) used together with `landingNormal` to detect if the mesh is so steep to jump to it. | 45
