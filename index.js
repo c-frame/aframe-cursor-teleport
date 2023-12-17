@@ -14,6 +14,7 @@ AFRAME.registerComponent('cursor-teleport', {
     cameraHead: { type: 'selector', default: '' },
     cameraRig: { type: 'selector', default: '' },
     collisionEntities: { type: 'string', default: '' },
+    defaultPlaneSize: { type: 'number', default: 100 },
     ignoreEntities: { type: 'string', default: '' },
     landingMaxAngle: { default: 45, min: 0, max: 360 },
     landingNormal: { type: 'vec3', default: { x: 0, y: 1, z: 0 } },
@@ -147,7 +148,7 @@ AFRAME.registerComponent('cursor-teleport', {
     } else {
       if (!this.collisionMesh) {
         // if no collision entities are specified, create a default ground plane collision.
-        const geo = new THREE.PlaneGeometry(50, 50, 1);
+        const geo = new THREE.PlaneGeometry(this.data.defaultPlaneSize, this.data.defaultPlaneSize, 1);
         geo.rotateX(-Math.PI / 2);
         const mat = new THREE.MeshNormalMaterial();
         const collisionMesh = new THREE.Mesh(geo, mat);
