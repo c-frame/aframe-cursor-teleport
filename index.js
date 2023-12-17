@@ -36,6 +36,7 @@ AFRAME.registerComponent('cursor-teleport', {
         this.cam = child;
       }
     });
+    this.camForRotation = this.data.cameraHead.object3D; // This is the Group, parent of the PerspectiveCamera
 
     this.camRig = this.data.cameraRig.object3D;
 
@@ -65,6 +66,8 @@ AFRAME.registerComponent('cursor-teleport', {
     this.transitionProgress = 0;
     this.transitionCamPosStart = new THREE.Vector3();
     this.transitionCamPosEnd = new THREE.Vector3();
+    this.transitionCamQuaternionStart = new THREE.Quaternion();
+    this.transitionCamQuaternionEnd = new THREE.Quaternion();
 
     // Bind functions
     this.updateRaycastObjects = this.updateRaycastObjects.bind(this);
@@ -76,6 +79,7 @@ AFRAME.registerComponent('cursor-teleport', {
     this.mouseDown = this.mouseDown.bind(this);
     this.mouseUp = this.mouseUp.bind(this);
     this.easeInOutQuad = this.easeInOutQuad.bind(this);
+    this.teleportTo = this.teleportTo.bind(this);
     this.hideCursor = this.hideCursor.bind(this);
 
     this.updateRaycastObjects();
@@ -227,10 +231,17 @@ AFRAME.registerComponent('cursor-teleport', {
     return THREE.MathUtils.RAD2DEG * angleNormals <= this.data.landingMaxAngle;
   },
 
-  transition(destPos) {
+  transition(destPos, destQuaternion = undefined) {
     this.transitionProgress = 0;
     this.transitionCamPosEnd.copy(destPos);
     this.transitionCamPosStart.copy(this.camRig.position);
+    if (destQuaternion) {
+      this.transitionCamQuaternionEnd.copy(destQuaternion);
+      this.transitionCamQuaternionStart.copy(this.camRig.quaternion);
+    } else {
+      this.transitionCamQuaternionEnd.copy(this.camRig.quaternion);
+      this.transitionCamQuaternionStart.copy(this.transitionCamQuaternionEnd);
+    }
     this.transitioning = true;
     this.el.emit('navigation-start');
   },
@@ -267,6 +278,21 @@ AFRAME.registerComponent('cursor-teleport', {
     }
   },
 
+  teleportTo(pos, quaternion = undefined) {
+    this.teleportIndicator.position.copy(pos);
+    if (!quaternion) {
+      this.transition(pos);
+    } else {
+      const destQuaternion = new THREE.Quaternion();
+      destQuaternion.setFromEuler(new THREE.Euler(0, this.camForRotation.rotation.y, 0));
+      destQuaternion.invert();
+      destQuaternion.multiply(quaternion);
+      this.transition(pos, destQuaternion);
+    }
+    // don't show the indicator when using via api
+    this.hideCursor();
+  },
+
   easeInOutQuad(t) {
     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
   },
@@ -292,9 +318,16 @@ AFRAME.registerComponent('cursor-teleport', {
         easeInOutTransitionProgress
       );
 
+      this.camRig.quaternion.slerpQuaternions(
+        this.transitionCamQuaternionStart,
+        this.transitionCamQuaternionEnd,
+        easeInOutTransitionProgress
+      );
+
       if (this.transitionProgress >= 1) {
         this.transitioning = false;
         camPos.copy(this.transitionCamPosEnd);
+        this.camRig.quaternion.copy(this.transitionCamQuaternionEnd);
         this.el.emit('navigation-end');
       }
     }
