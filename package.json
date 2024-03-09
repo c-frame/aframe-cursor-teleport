@@ -1,6 +1,6 @@
 {
   "name": "aframe-cursor-teleport-component",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Simple teleport navigation for non-XR devices.",
   "module": "index.js",
   "main": "dist/aframe-cursor-teleport-component.min.js",
