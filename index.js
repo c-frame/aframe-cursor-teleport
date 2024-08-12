@@ -9,6 +9,7 @@ if (typeof AFRAME === 'undefined') {
  */
 AFRAME.registerComponent('cursor-teleport', {
   schema: {
+    enabled: { type: 'boolean', default: true },
     cameraHead: { type: 'selector', default: '' },
     cameraRig: { type: 'selector', default: '' },
     collisionEntities: { type: 'string', default: '' },
@@ -97,7 +98,19 @@ AFRAME.registerComponent('cursor-teleport', {
     }
   },
 
-  play() {
+  update(oldData) {
+    if (typeof oldData.enabled === 'undefined') return;
+    if (!oldData.enabled && this.data.enabled) {
+      this.registerEventListeners();
+    }
+    if (oldData.enabled && !this.data.enabled) {
+      // Call unregisterEventListeners instead of pause that is a wrapped method unregistering tick method
+      // because we still want the tick method to use the component via the teleportTo api.
+      this.unregisterEventListeners();
+    }
+  },
+
+  registerEventListeners() {
     const canvas = this.canvas;
     canvas.addEventListener('mousedown', this.mouseDown, false);
     canvas.addEventListener('mousemove', this.mouseMove, false);
@@ -108,7 +121,7 @@ AFRAME.registerComponent('cursor-teleport', {
     window.addEventListener('keydown', this.hideCursor, false);
   },
 
-  pause() {
+  unregisterEventListeners() {
     this.transitioning = false;
     this.hideCursor();
     const canvas = this.canvas;
@@ -119,6 +132,15 @@ AFRAME.registerComponent('cursor-teleport', {
     canvas.removeEventListener('touchmove', this.mouseMove);
     canvas.removeEventListener('touchend', this.mouseUp);
     window.removeEventListener('keydown', this.hideCursor);
+  },
+
+  play() {
+    if (!this.data.enabled) return;
+    this.registerEventListeners();
+  },
+
+  pause() {
+    this.unregisterEventListeners();
   },
 
   updateRaycastObjects() {

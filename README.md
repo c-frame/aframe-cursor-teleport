@@ -16,6 +16,7 @@ For [A-Frame](https://aframe.io).
 
 | Property          | Description                                                                                                      | Default Value |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------- | ------------- |
+| enabled           | Enable or disable the component                                                                                  | true          |
 | cameraRig         | Selector of the camera rig to teleport                                                                           |               |
 | cameraHead        | Selector of the scene's active camera                                                                            |               |
 | collisionEntities | Selector of the meshes used to check the collisions. If no value provided a plane at Y=0 is used.                |               |
