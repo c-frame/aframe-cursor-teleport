@@ -1,9 +1,7 @@
 /* global AFRAME, THREE */
 
 if (typeof AFRAME === 'undefined') {
-  throw new Error(
-    'Component attempted to register before AFRAME was available.'
-  );
+  throw new Error('Component attempted to register before AFRAME was available.');
 }
 
 /**
@@ -23,9 +21,7 @@ AFRAME.registerComponent('cursor-teleport', {
 
   init() {
     // platform detect
-    this.mobile =
-      AFRAME.utils.device.isMobile() ||
-      AFRAME.utils.device.isMobileDeviceRequestingDesktopSite();
+    this.mobile = AFRAME.utils.device.isMobile() || AFRAME.utils.device.isMobileDeviceRequestingDesktopSite();
 
     // main app
     const sceneEl = this.el.sceneEl;
@@ -132,9 +128,7 @@ AFRAME.registerComponent('cursor-teleport', {
 
     if (this.data.collisionEntities !== '') {
       // traverse collision entities and add their meshes to the rayCastEntities array.
-      const collisionEntities = this.el.sceneEl.querySelectorAll(
-        this.data.collisionEntities
-      );
+      const collisionEntities = this.el.sceneEl.querySelectorAll(this.data.collisionEntities);
 
       collisionEntities.forEach((e) => {
         e.object3D.traverse((child) => {
@@ -162,9 +156,7 @@ AFRAME.registerComponent('cursor-teleport', {
     // We may need some entities to be seen by the raycaster even though they are not teleportable.
     // This prevents the user from unnesserily teleporting when clicking things like buttons or UI.
     if (this.data.ignoreEntities !== '') {
-      const ignoreEntities = this.el.sceneEl.querySelectorAll(
-        this.data.ignoreEntities
-      );
+      const ignoreEntities = this.el.sceneEl.querySelectorAll(this.data.ignoreEntities);
       ignoreEntities.forEach((e) => {
         e.object3D.traverse((child) => {
           if (child.isMesh) {
@@ -202,13 +194,8 @@ AFRAME.registerComponent('cursor-teleport', {
           mouse.x = (mouseX / (rect.right - rect.left)) * 2 - 1;
           mouse.y = -(mouseY / (rect.bottom - rect.top)) * 2 + 1;
           this.rayCaster.setFromCamera(mouse, cam);
-          const intersects = this.rayCaster.intersectObjects(
-            this.rayCastObjects
-          );
-          if (
-            intersects.length !== 0 &&
-            this.isValidNormalsAngle(intersects[0].face.normal, intersects[0].object)
-          ) {
+          const intersects = this.rayCaster.intersectObjects(this.rayCastObjects);
+          if (intersects.length !== 0 && this.isValidNormalsAngle(intersects[0].face.normal, intersects[0].object)) {
             if (intersects[0].object.userData.collision === true) {
               return intersects[0].point;
             }
@@ -307,17 +294,11 @@ AFRAME.registerComponent('cursor-teleport', {
     }
     if (this.transitioning) {
       this.transitionProgress += delta * this.data.transitionSpeed;
-      const easeInOutTransitionProgress = this.easeInOutQuad(
-        this.transitionProgress
-      );
+      const easeInOutTransitionProgress = this.easeInOutQuad(this.transitionProgress);
 
       // set camera position
       const camPos = this.camRig.position;
-      camPos.lerpVectors(
-        this.transitionCamPosStart,
-        this.transitionCamPosEnd,
-        easeInOutTransitionProgress
-      );
+      camPos.lerpVectors(this.transitionCamPosStart, this.transitionCamPosEnd, easeInOutTransitionProgress);
 
       this.camRig.quaternion.slerpQuaternions(
         this.transitionCamQuaternionStart,
