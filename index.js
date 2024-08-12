@@ -30,7 +30,7 @@ AFRAME.registerComponent('cursor-teleport', {
     // camera
     this.data.cameraHead.object3D.traverse((child) => {
       if (child instanceof THREE.Camera) {
-        this.cam = child;
+        this.cam = child; // This is the PerspectiveCamera
       }
     });
     this.camForRotation = this.data.cameraHead.object3D; // This is the Group, parent of the PerspectiveCamera
