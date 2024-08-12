@@ -19,6 +19,8 @@ For [A-Frame](https://aframe.io).
 | enabled           | Enable or disable the component                                                                                  | true          |
 | cameraRig         | Selector of the camera rig to teleport                                                                           |               |
 | cameraHead        | Selector of the scene's active camera                                                                            |               |
+| cursorColor       | Color of the cursor, default blue                                                                                | '#4d93fd'     |
+| cursorType        | Type of the cursor, cylinder or ring                                                                             | 'cylinder'    |
 | collisionEntities | Selector of the meshes used to check the collisions. If no value provided a plane at Y=0 is used.                |               |
 | defaultPlaneSize  | Size of the default plane created for collision when `collisionEntities` is not specified                        | 100           |
 | ignoreEntities    | Selector of meshes that may obstruct the teleport raycaster, like UI or other clickable elements.                |               |
