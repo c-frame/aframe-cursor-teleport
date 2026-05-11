@@ -26,6 +26,9 @@ For [A-Frame](https://aframe.io).
 | ignoreEntities    | Selector of meshes that may obstruct the teleport raycaster, like UI or other clickable elements.                |               |
 | landingNormal     | Normal vector to detect collisions with the `collisionEntities`                                                  | (0, 1, 0)     |
 | landingMaxAngle   | Angle threshold (in degrees) used together with `landingNormal` to detect if the mesh is so steep to jump to it. | 45            |
+| transitionArcHeight | Height added above the start or end point when `transitionPath` is `arc`.                                      | 0.75          |
+| transitionPath    | Transition style between destinations. Use `arc` to rise before moving horizontally, or `direct` for a straight line. | 'arc'    |
+| transitionSpeed   | Speed of the navigation transition.                                                                              | 0.0006        |
 
 ### Events
 

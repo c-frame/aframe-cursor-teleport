@@ -19,6 +19,8 @@ AFRAME.registerComponent('cursor-teleport', {
     ignoreEntities: { type: 'string', default: '' },
     landingMaxAngle: { default: 45, min: 0, max: 360 },
     landingNormal: { type: 'vec3', default: { x: 0, y: 1, z: 0 } },
+    transitionArcHeight: { type: 'number', default: 0.75 },
+    transitionPath: { type: 'string', default: 'arc', oneOf: ['arc', 'direct'] },
     transitionSpeed: { type: 'number', default: 0.0006 }
   },
 
@@ -86,6 +88,7 @@ AFRAME.registerComponent('cursor-teleport', {
     this.transitioning = false;
     this.transitionProgress = 0;
     this.transitionCamPosStart = new THREE.Vector3();
+    this.transitionCamPosPeak = new THREE.Vector3();
     this.transitionCamPosEnd = new THREE.Vector3();
     this.transitionCamQuaternionStart = new THREE.Quaternion();
     this.transitionCamQuaternionEnd = new THREE.Quaternion();
@@ -270,6 +273,11 @@ AFRAME.registerComponent('cursor-teleport', {
     this.transitionProgress = 0;
     this.transitionCamPosEnd.copy(destPos);
     this.transitionCamPosStart.copy(this.camRig.position);
+    this.transitionCamPosPeak.set(
+      this.transitionCamPosStart.x,
+      Math.max(this.transitionCamPosStart.y, this.transitionCamPosEnd.y) + this.data.transitionArcHeight,
+      this.transitionCamPosStart.z
+    );
     if (destQuaternion) {
       this.transitionCamQuaternionEnd.copy(destQuaternion);
       this.transitionCamQuaternionStart.copy(this.camRig.quaternion);
@@ -332,6 +340,32 @@ AFRAME.registerComponent('cursor-teleport', {
     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
   },
 
+  interpolateTransitionPosition(camPos, transitionProgress) {
+    if (this.data.transitionPath === 'direct') {
+      camPos.lerpVectors(this.transitionCamPosStart, this.transitionCamPosEnd, this.easeInOutQuad(transitionProgress));
+      return;
+    }
+
+    const lerp = THREE.MathUtils.lerp;
+
+    if (transitionProgress < 0.5) {
+      const yProgress = this.easeInOutQuad(transitionProgress * 2);
+      camPos.set(
+        this.transitionCamPosStart.x,
+        lerp(this.transitionCamPosStart.y, this.transitionCamPosPeak.y, yProgress),
+        this.transitionCamPosStart.z
+      );
+      return;
+    }
+
+    const xzProgress = this.easeInOutQuad((transitionProgress - 0.5) * 2);
+    camPos.set(
+      lerp(this.transitionCamPosStart.x, this.transitionCamPosEnd.x, xzProgress),
+      lerp(this.transitionCamPosPeak.y, this.transitionCamPosEnd.y, xzProgress),
+      lerp(this.transitionCamPosStart.z, this.transitionCamPosEnd.z, xzProgress)
+    );
+  },
+
   tick(time, delta) {
     if (!this.transitioning && !this.mobile) {
       const pos = this.getTeleportPosition(this.mouseX, this.mouseY);
@@ -341,14 +375,15 @@ AFRAME.registerComponent('cursor-teleport', {
     }
     if (this.transitioning) {
       this.transitionProgress += delta * this.data.transitionSpeed;
-      const easeInOutTransitionProgress = this.easeInOutQuad(this.transitionProgress);
+      const transitionProgress = Math.min(this.transitionProgress, 1);
+      const easeInOutTransitionProgress = this.easeInOutQuad(transitionProgress);
       const value =
         easeInOutTransitionProgress < 0.5 ? easeInOutTransitionProgress : 0.5 - 1 * (easeInOutTransitionProgress - 0.5);
       this.teleportIndicator.scale.set(0.5 + value, 1, 0.5 + value);
 
       // set camera position
       const camPos = this.camRig.position;
-      camPos.lerpVectors(this.transitionCamPosStart, this.transitionCamPosEnd, easeInOutTransitionProgress);
+      this.interpolateTransitionPosition(camPos, transitionProgress);
 
       this.camRig.quaternion.slerpQuaternions(
         this.transitionCamQuaternionStart,
