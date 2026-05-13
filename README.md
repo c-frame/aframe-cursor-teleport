@@ -26,6 +26,8 @@ For [A-Frame](https://aframe.io).
 | ignoreEntities    | Selector of meshes that may obstruct the teleport raycaster, like UI or other clickable elements.                |               |
 | landingNormal     | Normal vector to detect collisions with the `collisionEntities`                                                  | (0, 1, 0)     |
 | landingMaxAngle   | Angle threshold (in degrees) used together with `landingNormal` to detect if the mesh is so steep to jump to it. | 45            |
+| transitionSpeed   | Speed used to animate camera rig position and rotation during teleport transitions.                              | 0.0006        |
+| transitionUpOffset | Extra vertical offset used to move upward before moving toward the destination. Use 0 for a direct transition.  | 0.5           |
 
 ### Events
 
