@@ -34,7 +34,8 @@ AFRAME.registerComponent('cursor-teleport', {
     ignoreEntities: { type: 'string', default: '' },
     landingMaxAngle: { default: 45, min: 0, max: 360 },
     landingNormal: { type: 'vec3', default: { x: 0, y: 1, z: 0 } },
-    transitionSpeed: { type: 'number', default: 0.0006 }
+    transitionSpeed: { type: 'number', default: 0.0006 },
+    transitionUpOffset: { type: 'number', default: 0.5, min: 0 }
   },
 
   init() {
@@ -102,6 +103,7 @@ AFRAME.registerComponent('cursor-teleport', {
     this.transitionProgress = 0;
     this.transitionCamPosStart = new THREE.Vector3();
     this.transitionCamPosEnd = new THREE.Vector3();
+    this.transitionCamPosMid = new THREE.Vector3();
     this.transitionCamQuaternionStart = new THREE.Quaternion();
     this.transitionCamQuaternionEnd = new THREE.Quaternion();
 
@@ -111,6 +113,7 @@ AFRAME.registerComponent('cursor-teleport', {
     this.getTeleportPosition = this.getTeleportPosition.bind(this);
     this.isValidNormalsAngle = this.isValidNormalsAngle.bind(this);
     this.transition = this.transition.bind(this);
+    this.updateTransitionPosition = this.updateTransitionPosition.bind(this);
     this.mouseMove = this.mouseMove.bind(this);
     this.mouseDown = this.mouseDown.bind(this);
     this.mouseUp = this.mouseUp.bind(this);
@@ -285,6 +288,9 @@ AFRAME.registerComponent('cursor-teleport', {
     this.transitionProgress = 0;
     this.transitionCamPosEnd.copy(destPos);
     this.transitionCamPosStart.copy(this.camRig.position);
+    this.transitionCamPosMid.copy(this.transitionCamPosStart);
+    this.transitionCamPosMid.y =
+      Math.max(this.transitionCamPosStart.y, this.transitionCamPosEnd.y) + this.data.transitionUpOffset;
     if (destQuaternion) {
       this.transitionCamQuaternionEnd.copy(destQuaternion);
       this.transitionCamQuaternionStart.copy(this.camRig.quaternion);
@@ -294,6 +300,23 @@ AFRAME.registerComponent('cursor-teleport', {
     }
     this.transitioning = true;
     this.el.emit('navigation-start');
+  },
+
+  updateTransitionPosition(camPos, progress) {
+    if (this.data.transitionUpOffset <= 0) {
+      camPos.lerpVectors(this.transitionCamPosStart, this.transitionCamPosEnd, this.easeInOutQuad(progress));
+      return;
+    }
+
+    if (progress < 0.5) {
+      camPos.lerpVectors(this.transitionCamPosStart, this.transitionCamPosMid, this.easeInOutQuad(progress * 2));
+    } else {
+      camPos.lerpVectors(
+        this.transitionCamPosMid,
+        this.transitionCamPosEnd,
+        this.easeInOutQuad((progress - 0.5) * 2)
+      );
+    }
   },
 
   hideCursor() {
@@ -356,14 +379,15 @@ AFRAME.registerComponent('cursor-teleport', {
     }
     if (this.transitioning) {
       this.transitionProgress += delta * this.data.transitionSpeed;
-      const easeInOutTransitionProgress = this.easeInOutQuad(this.transitionProgress);
+      const transitionProgress = Math.min(this.transitionProgress, 1);
+      const easeInOutTransitionProgress = this.easeInOutQuad(transitionProgress);
       const value =
         easeInOutTransitionProgress < 0.5 ? easeInOutTransitionProgress : 0.5 - 1 * (easeInOutTransitionProgress - 0.5);
       this.teleportIndicator.scale.set(0.5 + value, 1, 0.5 + value);
 
       // set camera position
       const camPos = this.camRig.position;
-      camPos.lerpVectors(this.transitionCamPosStart, this.transitionCamPosEnd, easeInOutTransitionProgress);
+      this.updateTransitionPosition(camPos, transitionProgress);
 
       this.camRig.quaternion.slerpQuaternions(
         this.transitionCamQuaternionStart,
