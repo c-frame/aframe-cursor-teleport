@@ -26,6 +26,9 @@ For [A-Frame](https://aframe.io).
 | ignoreEntities    | Selector of meshes that may obstruct the teleport raycaster, like UI or other clickable elements.                |               |
 | landingNormal     | Normal vector to detect collisions with the `collisionEntities`                                                  | (0, 1, 0)     |
 | landingMaxAngle   | Angle threshold (in degrees) used together with `landingNormal` to detect if the mesh is so steep to jump to it. | 45            |
+| transitionAutoRotate | Rotate toward the clicked teleport destination while traveling.                                               | true          |
+| transitionSpeed   | Transition progress added per frame delta.                                                                       | 0.0006        |
+| transitionUpOffset | Height added before moving horizontally during the teleport transition.                                         | 1.6           |
 
 ### Events
 
