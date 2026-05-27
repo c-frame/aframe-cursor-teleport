@@ -34,7 +34,9 @@ AFRAME.registerComponent('cursor-teleport', {
     ignoreEntities: { type: 'string', default: '' },
     landingMaxAngle: { default: 45, min: 0, max: 360 },
     landingNormal: { type: 'vec3', default: { x: 0, y: 1, z: 0 } },
-    transitionSpeed: { type: 'number', default: 0.0006 }
+    transitionAutoRotate: { type: 'boolean', default: true },
+    transitionSpeed: { type: 'number', default: 0.0006 },
+    transitionUpOffset: { type: 'number', default: 1.6 }
   },
 
   init() {
@@ -101,6 +103,7 @@ AFRAME.registerComponent('cursor-teleport', {
     this.transitioning = false;
     this.transitionProgress = 0;
     this.transitionCamPosStart = new THREE.Vector3();
+    this.transitionCamPosMid = new THREE.Vector3();
     this.transitionCamPosEnd = new THREE.Vector3();
     this.transitionCamQuaternionStart = new THREE.Quaternion();
     this.transitionCamQuaternionEnd = new THREE.Quaternion();
@@ -109,6 +112,8 @@ AFRAME.registerComponent('cursor-teleport', {
     this.updateRaycastObjects = this.updateRaycastObjects.bind(this);
     this.getMouseState = this.getMouseState.bind(this);
     this.getTeleportPosition = this.getTeleportPosition.bind(this);
+    this.getLookAtQuaternion = this.getLookAtQuaternion.bind(this);
+    this.getRigQuaternionForWorldQuaternion = this.getRigQuaternionForWorldQuaternion.bind(this);
     this.isValidNormalsAngle = this.isValidNormalsAngle.bind(this);
     this.transition = this.transition.bind(this);
     this.mouseMove = this.mouseMove.bind(this);
@@ -281,10 +286,37 @@ AFRAME.registerComponent('cursor-teleport', {
     return THREE.MathUtils.RAD2DEG * angleNormals <= this.data.landingMaxAngle;
   },
 
+  getRigQuaternionForWorldQuaternion(quaternion) {
+    const destQuaternion = new THREE.Quaternion();
+    destQuaternion.setFromEuler(new THREE.Euler(0, this.camForRotation.rotation.y, 0));
+    destQuaternion.invert();
+    destQuaternion.multiply(quaternion);
+    return destQuaternion;
+  },
+
+  getLookAtQuaternion(destPos) {
+    if (!this.data.transitionAutoRotate) {
+      return undefined;
+    }
+
+    const x = destPos.x - this.camRig.position.x;
+    const z = destPos.z - this.camRig.position.z;
+    if (Math.hypot(x, z) < 0.000001) {
+      return undefined;
+    }
+
+    const yaw = Math.atan2(-x, -z);
+    const destQuaternion = new THREE.Quaternion();
+    destQuaternion.setFromEuler(new THREE.Euler(0, yaw, 0));
+    return this.getRigQuaternionForWorldQuaternion(destQuaternion);
+  },
+
   transition(destPos, destQuaternion = undefined) {
     this.transitionProgress = 0;
     this.transitionCamPosEnd.copy(destPos);
     this.transitionCamPosStart.copy(this.camRig.position);
+    this.transitionCamPosMid.copy(this.transitionCamPosStart);
+    this.transitionCamPosMid.y = Math.max(this.transitionCamPosStart.y, this.transitionCamPosEnd.y) + this.data.transitionUpOffset;
     if (destQuaternion) {
       this.transitionCamQuaternionEnd.copy(destQuaternion);
       this.transitionCamQuaternionStart.copy(this.camRig.quaternion);
@@ -323,7 +355,7 @@ AFRAME.registerComponent('cursor-teleport', {
       if (pos) {
         this.teleportIndicator.visible = true;
         this.teleportIndicator.position.copy(pos);
-        this.transition(pos);
+        this.transition(pos, this.getLookAtQuaternion(pos));
       }
     }
   },
@@ -333,11 +365,7 @@ AFRAME.registerComponent('cursor-teleport', {
     if (!quaternion) {
       this.transition(pos);
     } else {
-      const destQuaternion = new THREE.Quaternion();
-      destQuaternion.setFromEuler(new THREE.Euler(0, this.camForRotation.rotation.y, 0));
-      destQuaternion.invert();
-      destQuaternion.multiply(quaternion);
-      this.transition(pos, destQuaternion);
+      this.transition(pos, this.getRigQuaternionForWorldQuaternion(quaternion));
     }
     // don't show the indicator when using via api
     this.hideCursor();
@@ -356,14 +384,24 @@ AFRAME.registerComponent('cursor-teleport', {
     }
     if (this.transitioning) {
       this.transitionProgress += delta * this.data.transitionSpeed;
-      const easeInOutTransitionProgress = this.easeInOutQuad(this.transitionProgress);
+      const clampedTransitionProgress = Math.min(this.transitionProgress, 1);
+      const easeInOutTransitionProgress = this.easeInOutQuad(clampedTransitionProgress);
       const value =
         easeInOutTransitionProgress < 0.5 ? easeInOutTransitionProgress : 0.5 - 1 * (easeInOutTransitionProgress - 0.5);
       this.teleportIndicator.scale.set(0.5 + value, 1, 0.5 + value);
 
       // set camera position
       const camPos = this.camRig.position;
-      camPos.lerpVectors(this.transitionCamPosStart, this.transitionCamPosEnd, easeInOutTransitionProgress);
+      if (this.data.transitionUpOffset > 0) {
+        const transitionPoint = easeInOutTransitionProgress < 0.5 ? this.transitionCamPosStart : this.transitionCamPosMid;
+        const transitionDestination = easeInOutTransitionProgress < 0.5 ? this.transitionCamPosMid : this.transitionCamPosEnd;
+        const transitionProgress = easeInOutTransitionProgress < 0.5
+          ? easeInOutTransitionProgress * 2
+          : (easeInOutTransitionProgress - 0.5) * 2;
+        camPos.lerpVectors(transitionPoint, transitionDestination, transitionProgress);
+      } else {
+        camPos.lerpVectors(this.transitionCamPosStart, this.transitionCamPosEnd, easeInOutTransitionProgress);
+      }
 
       this.camRig.quaternion.slerpQuaternions(
         this.transitionCamQuaternionStart,
